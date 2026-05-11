@@ -341,6 +341,11 @@ module SpMDV
 				end
 
 				LOAD_VECTOR: begin
+					if (raw_data_valid && load_count < 14'd5) begin
+						$display("LOAD_VECTOR: time=%0t load_count=%0d raw_input=%h", 
+							$time, load_count, raw_input);
+					end
+
 					raw_data_request <= 1'b1;
 
 					if (raw_data_valid) begin
@@ -402,6 +407,10 @@ module SpMDV
 
 				WAIT_VECTOR: begin
 					vector_r <= x_Q;
+					if (vector_count == 4'd0 && row_count == 9'd0 && nonzero_count < 6'd3) begin
+						$display("READ X: time=%0t x_A=%0d x_Q=%h vector_r=%h", 
+							$time, x_A, x_Q, vector_r);
+					end
 				end
 
 				//sum = bias + w0*x0 + w1*x1 + ... + w47*x47
