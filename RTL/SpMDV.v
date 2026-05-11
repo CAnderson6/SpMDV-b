@@ -43,8 +43,8 @@ module SpMDV
     localparam CALCULATION   = 5'd14;
     localparam OUTPUT        = 5'd15;
 
-	localparam WAIT_LOAD0    = 5'd16;
-	localparam WAIT_LOAD1    = 5'd17;
+	localparam PRE_LOAD      = 5'd16;
+	localparam WAIT_LOAD     = 5'd17;
 
 	reg [4:0] state;
 	reg [4:0] nextstate;
@@ -343,6 +343,10 @@ module SpMDV
 					vector_count <= 4'd0;
 					sum <= 22'd0;
 				end
+
+				PRE_LOAD: begin
+					raw_data_request <= 1'b1;
+				end
 				
 				LOAD_VECTOR: begin
 					if (raw_data_valid && load_count < 14'd5) begin
@@ -363,11 +367,7 @@ module SpMDV
 					end
 				end
 
-
-				WAIT_LOAD0: begin
-				end
-
-				WAIT_LOAD1: begin
+				WAIT_LOAD: begin
 				end
 
 
@@ -503,21 +503,21 @@ module SpMDV
 			end
 
 			IDLE1: begin
+				nextstate = PRE_LOAD;
+			end
+
+			PRE_LOAD: begin
 				nextstate = LOAD_VECTOR;
 			end
 
 			LOAD_VECTOR: begin
 				if (raw_data_valid && load_count == 14'd4095)
-					nextstate = WAIT_LOAD0;
+					nextstate = WAIT_LOAD;
 				else
 					nextstate = LOAD_VECTOR;
 			end
 
-			WAIT_LOAD0: begin
-				nextstate = WAIT_LOAD1;
-			end
-
-			WAIT_LOAD1: begin
+			WAIT_LOAD: begin
 				nextstate = READ_BIAS;
 			end
 
