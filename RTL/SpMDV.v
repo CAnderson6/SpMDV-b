@@ -300,7 +300,10 @@ module SpMDV
 				end
 
 				LOAD_WEIGHT: begin
-					ld_w_request <= 1'b1;
+					if (w_input_valid && load_count == 14'd12287)
+						ld_w_request <= 1'b0;
+					else
+						ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd12287)
@@ -311,7 +314,10 @@ module SpMDV
 				end
 
 				LOAD_POSITION: begin
-					ld_w_request <= 1'b1;
+					if (w_input_valid && load_count == 14'd12287)
+						ld_w_request <= 1'b0;
+					else
+						ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd12287)
@@ -322,7 +328,10 @@ module SpMDV
 				end
 
 				LOAD_BIAS: begin
-					ld_w_request <= 1'b1;
+					if (w_input_valid && load_count == 14'd255)
+						ld_w_request <= 1'b0;
+					else
+						ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd255)
@@ -338,16 +347,18 @@ module SpMDV
 					nonzero_count <= 6'd0;
 					vector_count <= 4'd0;
 					sum <= 22'd0;
-					raw_data_request <= 1'b1;
 				end
-				
+
 				LOAD_VECTOR: begin
 					if (raw_data_valid && load_count < 14'd5) begin
 						$display("LOAD_VECTOR: time=%0t load_count=%0d raw_input=%h", 
 							$time, load_count, raw_input);
 					end
 
-					raw_data_request <= 1'b1;
+					if (raw_data_valid && load_count == 14'd4095)
+						raw_data_request <= 1'b0;
+					else
+						raw_data_request <= 1'b1;
 
 					if (raw_data_valid) begin
 						if (load_count == 14'd4095)
@@ -404,17 +415,13 @@ module SpMDV
 				end
 
 				READ_VECTOR: begin
-					if (vector_count == 4'd0 && row_count == 9'd0 && nonzero_count < 6'd3) begin
-						$display("READ_VECTOR: time=%0t vc=%0d row=%0d nz=%0d vector_index=%0d real_x_A=%0d",
-							$time, vector_count, row_count, nonzero_count, vector_index, {vector_count, vector_index});
-					end
 				end				
 
 				WAIT_VECTOR: begin
 					vector_r <= x_Q;
 					if (vector_count == 4'd0 && row_count == 9'd0 && nonzero_count < 6'd3) begin
-						$display("WAIT_VECTOR: time=%0t vc=%0d row=%0d nz=%0d x_Q=%h vector_r_old=%h",
-							$time, vector_count, row_count, nonzero_count, x_Q, vector_r);
+						$display("READ X: time=%0t x_A=%0d x_Q=%h vector_r=%h", 
+							$time, x_A, x_Q, vector_r);
 					end
 				end
 
