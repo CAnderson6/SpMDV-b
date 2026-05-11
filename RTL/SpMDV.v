@@ -205,6 +205,14 @@ module SpMDV
 				end
 			end
 
+			PRE_LOAD: begin
+				if (raw_data_valid) begin
+					x_CEN = 1'b0;
+					x_WEN = 1'b0;
+					x_A = load_count[11:0];
+					x_D = raw_input;
+				end
+			end
 
 			LOAD_VECTOR: begin
 				if (raw_data_valid) begin
@@ -346,6 +354,16 @@ module SpMDV
 
 				PRE_LOAD: begin
 					raw_data_request <= 1'b1;
+
+					if (raw_data_valid) begin
+						$display("PRE_LOAD: time=%0t load_count=%0d raw_input=%h", 
+							$time, load_count, raw_input);
+
+						if (load_count == 14'd4095)
+							load_count <= 14'd0;
+						else
+							load_count <= load_count + 14'd1;
+					end
 				end
 				
 				LOAD_VECTOR: begin
