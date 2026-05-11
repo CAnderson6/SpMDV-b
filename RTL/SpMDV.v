@@ -300,7 +300,10 @@ module SpMDV
 				end
 
 				LOAD_WEIGHT: begin
-					ld_w_request <= 1'b1;
+					if (w_input_valid && load_count == 14'd12287)
+						ld_w_request <= 1'b0;
+					else
+						ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd12287)
@@ -311,7 +314,10 @@ module SpMDV
 				end
 
 				LOAD_POSITION: begin
-					ld_w_request <= 1'b1;
+					if (w_input_valid && load_count == 14'd12287)
+						ld_w_request <= 1'b0;
+					else
+						ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd12287)
@@ -322,7 +328,10 @@ module SpMDV
 				end
 
 				LOAD_BIAS: begin
-					ld_w_request <= 1'b1;
+					if (w_input_valid && load_count == 14'd255)
+						ld_w_request <= 1'b0;
+					else
+						ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd255)
@@ -346,7 +355,10 @@ module SpMDV
 							$time, load_count, raw_input);
 					end
 
-					raw_data_request <= 1'b1;
+					if (raw_data_valid && load_count == 14'd4095)
+						raw_data_request <= 1'b0;
+					else
+						raw_data_request <= 1'b1;
 
 					if (raw_data_valid) begin
 						if (load_count == 14'd4095)
