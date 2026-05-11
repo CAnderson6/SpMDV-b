@@ -525,7 +525,10 @@ module SpMDV
 			end
 
 			PRE_LOAD: begin
-				nextstate = LOAD_VECTOR;
+				if (raw_data_valid)
+					nextstate = LOAD_VECTOR;
+				else
+					nextstate = PRE_LOAD;
 			end
 
 			LOAD_VECTOR: begin
