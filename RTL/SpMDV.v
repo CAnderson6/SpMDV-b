@@ -23,28 +23,31 @@ module SpMDV
 	reg [3:0]  vector_count; // 0~15
 
 	//States
-    localparam IDLE0         = 4'd0;
-    localparam LOAD_WEIGHT   = 4'd1;
-    localparam LOAD_POSITION = 4'd2;
-    localparam LOAD_BIAS     = 4'd3;
-    localparam IDLE1         = 4'd4;
-    localparam LOAD_VECTOR   = 4'd5;
+    localparam IDLE0         = 5'd0;
+    localparam LOAD_WEIGHT   = 5'd1;
+    localparam LOAD_POSITION = 5'd2;
+    localparam LOAD_BIAS     = 5'd3;
+    localparam IDLE1         = 5'd4;
+    localparam LOAD_VECTOR   = 5'd5;
 
-    localparam READ_BIAS     = 4'd6;
-    localparam WAIT_BIAS     = 4'd7;
-    localparam INIT_MULT     = 4'd8;
+    localparam READ_BIAS     = 5'd6;
+    localparam WAIT_BIAS     = 5'd7;
+    localparam INIT_MULT     = 5'd8;
 
-    localparam READ_WP       = 4'd9;
-    localparam WAIT_WP       = 4'd10;
-    localparam LATCH_WP      = 4'd11;
+    localparam READ_WP       = 5'd9;
+    localparam WAIT_WP       = 5'd10;
+    localparam LATCH_WP      = 5'd11;
 	
-    localparam READ_VECTOR   = 4'd12;
-    localparam WAIT_VECTOR   = 4'd13;
-    localparam CALCULATION   = 4'd14;
-    localparam OUTPUT        = 4'd15;
+    localparam READ_VECTOR   = 5'd12;
+    localparam WAIT_VECTOR   = 5'd13;
+    localparam CALCULATION   = 5'd14;
+    localparam OUTPUT        = 5'd15;
 
-	reg [3:0] state;
-	reg [3:0] nextstate;
+	localparam WAIT_LOAD0    = 5'd16;
+	localparam WAIT_LOAD1    = 5'd17;
+
+	reg [4:0] state;
+	reg [4:0] nextstate;
 
 
 	// weight SRAM (*3 4096*8)
@@ -125,6 +128,7 @@ module SpMDV
 			2'd1: vector_index = 8'd64  + {2'd0, position_r}; // bank1
 			2'd2: vector_index = 8'd128 + {2'd0, position_r}; // bank2
 			2'd3: vector_index = 8'd192 + {2'd0, position_r}; // bank3
+			default: vector_index = 8'd0;
 		endcase
 	end
 
@@ -300,10 +304,7 @@ module SpMDV
 				end
 
 				LOAD_WEIGHT: begin
-					if (w_input_valid && load_count == 14'd12287)
-						ld_w_request <= 1'b0;
-					else
-						ld_w_request <= 1'b1;
+					ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd12287)
@@ -314,10 +315,7 @@ module SpMDV
 				end
 
 				LOAD_POSITION: begin
-					if (w_input_valid && load_count == 14'd12287)
-						ld_w_request <= 1'b0;
-					else
-						ld_w_request <= 1'b1;
+					ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd12287)
@@ -328,10 +326,7 @@ module SpMDV
 				end
 
 				LOAD_BIAS: begin
-					if (w_input_valid && load_count == 14'd255)
-						ld_w_request <= 1'b0;
-					else
-						ld_w_request <= 1'b1;
+					ld_w_request <= 1'b1;
 
 					if (w_input_valid) begin
 						if (load_count == 14'd255)
@@ -348,7 +343,7 @@ module SpMDV
 					vector_count <= 4'd0;
 					sum <= 22'd0;
 				end
-
+				
 				LOAD_VECTOR: begin
 					if (raw_data_valid && load_count < 14'd5) begin
 						$display("LOAD_VECTOR: time=%0t load_count=%0d raw_input=%h", 
@@ -366,6 +361,13 @@ module SpMDV
 						else
 							load_count <= load_count + 14'd1;
 					end
+				end
+
+
+				WAIT_LOAD0: begin
+				end
+
+				WAIT_LOAD1: begin
 				end
 
 
@@ -415,13 +417,17 @@ module SpMDV
 				end
 
 				READ_VECTOR: begin
+					if (vector_count == 4'd0 && row_count == 9'd0 && nonzero_count < 6'd3) begin
+						$display("READ_VECTOR: time=%0t vc=%0d row=%0d nz=%0d vector_index=%0d real_x_A=%0d",
+							$time, vector_count, row_count, nonzero_count, vector_index, {vector_count, vector_index});
+					end
 				end				
 
 				WAIT_VECTOR: begin
 					vector_r <= x_Q;
 					if (vector_count == 4'd0 && row_count == 9'd0 && nonzero_count < 6'd3) begin
-						$display("READ X: time=%0t x_A=%0d x_Q=%h vector_r=%h", 
-							$time, x_A, x_Q, vector_r);
+						$display("WAIT_VECTOR: time=%0t vc=%0d row=%0d nz=%0d x_Q=%h vector_r_old=%h",
+							$time, vector_count, row_count, nonzero_count, x_Q, vector_r);
 					end
 				end
 
@@ -502,9 +508,17 @@ module SpMDV
 
 			LOAD_VECTOR: begin
 				if (raw_data_valid && load_count == 14'd4095)
-					nextstate = READ_BIAS;
+					nextstate = WAIT_LOAD0;
 				else
 					nextstate = LOAD_VECTOR;
+			end
+
+			WAIT_LOAD0: begin
+				nextstate = WAIT_LOAD1;
+			end
+
+			WAIT_LOAD1: begin
+				nextstate = READ_BIAS;
 			end
 
 			READ_BIAS: begin
