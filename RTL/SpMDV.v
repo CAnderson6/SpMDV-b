@@ -373,10 +373,6 @@ module SpMDV
 				end
 				
 				LOAD_VECTOR: begin
-					if (raw_data_valid && load_count < 14'd5) begin
-						$display("LOAD_VECTOR: time=%0t load_count=%0d raw_input=%h", 
-							$time, load_count, raw_input);
-					end
 
 					if (raw_data_valid) begin
 						if (load_count == 14'd4095)
@@ -444,11 +440,6 @@ module SpMDV
 						pipe_wp_valid <= 1'b0;
 					end
 
-
-					if (vector_count == 4'd0 && row_count == 9'd0 && pipe_done < 6'd3) begin
-						$display("PIPE: time=%0t issue=%0d done=%0d wp_valid=%b x_valid=%b bank=%0d weight=%h x_Q=%h prod=%h sum_old=%h",
-							$time, pipe_issue, pipe_done, pipe_wp_valid, pipe_x_valid, pipe_bank, pipe_weight_r, x_Q, pipe_product, sum);
-					end
 				end
 
 
