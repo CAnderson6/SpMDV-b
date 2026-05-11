@@ -113,26 +113,15 @@ module SpMDV
 	assign product = $signed(weight_r) * $signed(vector_r);
 	assign product_ext = {{6{product[15]}}, product}; //S4.11 -> S10.11
 
-	wire signed [15:0] product_xq;
-	wire signed [21:0] product_xq_ext;
-
-	assign product_xq = $signed(weight_r) * $signed(x_Q);
-	assign product_xq_ext = {{6{product_xq[15]}}, product_xq}; //S4.11 -> S10.11
-
 	reg [1:0] wp_bank;
 
 	wire [13:0] nonzero_index;
-	assign nonzero_index = ({5'd0, row_count} << 5) + 
-						   ({5'd0, row_count} << 4) + 
-						   {8'd0, nonzero_count};
+	assign nonzero_index = row_count * 14'd48 + nonzero_count;
 
 	reg [7:0] vector_index;
 
-	reg [5:0] position_direct;
-	reg [7:0] vector_index_direct;
 
-
-	// position(0~63) <-> vector index, original registered version
+	// position(0~63) <-> vector index
 	always @(*) begin
 		case (nonzero_count[1:0]) //decide bank
 			2'd0: vector_index = 8'd0   + {2'd0, position_r}; // bank0
@@ -142,28 +131,6 @@ module SpMDV
 			default: vector_index = 8'd0;
 		endcase
 	end
-
-	// direct position from position SRAM output
-	always @(*) begin
-		case (wp_bank)
-			2'd0: position_direct = p0_Q[5:0];
-			2'd1: position_direct = p1_Q[5:0];
-			2'd2: position_direct = p2_Q[5:0];
-			default: position_direct = 6'd0;
-		endcase
-	end
-
-	// direct vector index from p_Q
-	always @(*) begin
-		case (nonzero_count[1:0])
-			2'd0: vector_index_direct = 8'd0   + {2'd0, position_direct};
-			2'd1: vector_index_direct = 8'd64  + {2'd0, position_direct};
-			2'd2: vector_index_direct = 8'd128 + {2'd0, position_direct};
-			2'd3: vector_index_direct = 8'd192 + {2'd0, position_direct};
-			default: vector_index_direct = 8'd0;
-		endcase
-	end
-
 
 	// SRAM connecting
 	always @(*) begin
@@ -286,14 +253,11 @@ module SpMDV
 				end
 			end
 
-
-			// Optimization:
-			// In WAIT_WP, W/P SRAM outputs are already valid.
-			// Use p_Q directly to issue vector SRAM read.
-			WAIT_WP: begin
+			// address = vector_count * 256 + vector_index(8 bits)
+			READ_VECTOR: begin
 				x_CEN = 1'b0;
 				x_WEN = 1'b1;
-				x_A = {vector_count, vector_index_direct};
+				x_A = {vector_count, vector_index};
 			end
 
 		endcase
@@ -412,10 +376,10 @@ module SpMDV
 						wp_bank <= 2'd2;
 				end
 
-				// Optimization:
-				// W/P SRAM output is used here.
-				// Latch weight for next cycle and use p_Q directly to read vector SRAM.
 				WAIT_WP: begin
+				end
+
+				LATCH_WP: begin
 					case (wp_bank)
 						2'd0: begin
 							weight_r <= w0_Q;
@@ -434,40 +398,35 @@ module SpMDV
 							position_r <= 6'd0;
 						end
 					endcase
+				end
 
+				READ_VECTOR: begin
 					if (vector_count == 4'd0 && row_count == 9'd0 && nonzero_count < 6'd3) begin
-						$display("WAIT_WP: time=%0t vc=%0d row=%0d nz=%0d vector_index_direct=%0d real_x_A=%0d",
-							$time, vector_count, row_count, nonzero_count, vector_index_direct, {vector_count, vector_index_direct});
+						$display("READ_VECTOR: time=%0t vc=%0d row=%0d nz=%0d vector_index=%0d real_x_A=%0d",
+							$time, vector_count, row_count, nonzero_count, vector_index, {vector_count, vector_index});
+					end
+				end				
+
+				WAIT_VECTOR: begin
+					vector_r <= x_Q;
+					if (vector_count == 4'd0 && row_count == 9'd0 && nonzero_count < 6'd3) begin
+						$display("WAIT_VECTOR: time=%0t vc=%0d row=%0d nz=%0d x_Q=%h vector_r_old=%h",
+							$time, vector_count, row_count, nonzero_count, x_Q, vector_r);
 					end
 				end
 
-
-				// Optimization:
-				// x_Q is valid here, so directly do MAC.
-				WAIT_VECTOR: begin
-					vector_r <= x_Q;
-					sum <= sum + product_xq_ext;
+				//sum = bias + w0*x0 + w1*x1 + ... + w47*x47
+				// bias: S0.7 (changed to S10.11 already)				
+				// weight: S2.5
+				// vector: S1.6
+				// output: S10.11
+				CALCULATION: begin
+					sum <= sum + product_ext;
 
 					if (nonzero_count == 6'd47)
 						nonzero_count <= 6'd0;
 					else
 						nonzero_count <= nonzero_count + 6'd1;
-
-					if (vector_count == 4'd0 && row_count == 9'd0 && nonzero_count < 6'd3) begin
-						$display("WAIT_VECTOR_CALC: time=%0t vc=%0d row=%0d nz=%0d weight=%h x_Q=%h product=%h sum_old=%h",
-							$time, vector_count, row_count, nonzero_count, weight_r, x_Q, product_xq, sum);
-					end
-				end
-
-
-				// unused after optimization, keep for safety
-				LATCH_WP: begin
-				end
-
-				READ_VECTOR: begin
-				end
-
-				CALCULATION: begin
 				end
 
 
@@ -563,10 +522,22 @@ module SpMDV
 			end
 
 			WAIT_WP: begin
+				nextstate = LATCH_WP;
+			end
+
+			LATCH_WP: begin
+				nextstate = READ_VECTOR;
+			end
+
+			READ_VECTOR: begin
 				nextstate = WAIT_VECTOR;
 			end
 
 			WAIT_VECTOR: begin
+				nextstate = CALCULATION;
+			end
+
+			CALCULATION: begin
 				if (nonzero_count == 6'd47)
 					nextstate = OUTPUT;
 				else
@@ -588,7 +559,7 @@ module SpMDV
 	end
 
 
-	// Request logic: combinational
+	// Request logic: combinational, following friend's passing design
 	always @(*) begin
 		raw_data_request = 1'b0;
 		ld_w_request = 1'b0;
