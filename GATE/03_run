@@ -1,0 +1,1 @@
+vcs -full64 -R -f rtl_03.f -diag=sdf:verbose +define+SDF -debug_access+all -debug_region+cell +vcs+dumparrays+32768 +memcbk +define+tb0

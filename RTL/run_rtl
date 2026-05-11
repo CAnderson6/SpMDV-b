@@ -1,0 +1,1 @@
+vcs -full64 -R -f rtl.f +notimingcheck -debug_access+all -debug_region+cell +memcbk +define+tb0
