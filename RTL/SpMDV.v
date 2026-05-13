@@ -157,6 +157,9 @@ module SpMDV
 	reg signed [7:0] pipe_weight1_r;
 
 
+	wire [5:0] pipe_issue_plus1;
+	wire [1:0] pipe_issue_bank1;
+
 	wire [13:0] pipe_base_index;
 	wire [13:0] pipe_issue_index0;
 	wire [13:0] pipe_issue_index1;
@@ -164,11 +167,14 @@ module SpMDV
 	wire [1:0] pipe_issue_sram0;
 	wire [1:0] pipe_issue_sram1;
 
+	assign pipe_issue_plus1 = pipe_issue + 6'd1;
+	assign pipe_issue_bank1 = pipe_issue_plus1[1:0];
+
 	assign pipe_base_index = ({5'd0, row_count} << 5) +
 	                         ({5'd0, row_count} << 4);
 
 	assign pipe_issue_index0 = pipe_base_index + {8'd0, pipe_issue};
-	assign pipe_issue_index1 = pipe_base_index + {8'd0, (pipe_issue + 6'd1)};
+	assign pipe_issue_index1 = pipe_base_index + {8'd0, pipe_issue_plus1};
 
 	assign pipe_issue_sram0 = pipe_issue_index0[13:12];
 	assign pipe_issue_sram1 = pipe_issue_index1[13:12];
