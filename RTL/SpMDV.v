@@ -645,7 +645,7 @@ module SpMDV
 						pipe_wp_sram1 <= pipe_issue_sram1;
 
 						pipe_bank0 <= pipe_issue[1:0];
-						pipe_bank1 <= (pipe_issue + 6'd1)[1:0];
+						pipe_bank1 <= pipe_issue_bank1;
 
 						pipe_issue <= pipe_issue + 6'd2;
 					end
