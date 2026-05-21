@@ -42,6 +42,7 @@ module SpMDV
 	localparam COMPUTE_PIPE  = 5'd13;
 	localparam STORE_RESULT  = 5'd14;
     localparam OUTPUT_BUF    = 5'd15;
+    localparam WAIT_OUTPUT   = 5'd16;
 
 	reg [4:0] state;
 	reg [4:0] nextstate;
@@ -75,6 +76,13 @@ module SpMDV
 	reg  x_CEN, xb_CEN, xc_CEN, xd_CEN;
 	reg  x_WEN, xb_WEN, xc_WEN, xd_WEN;
 
+	// output reorder buffer SRAM (*3 4096*8, store 22-bit result as 24-bit)
+	reg  [11:0] ob0_A, ob1_A, ob2_A;
+	reg  [7:0]  ob0_D, ob1_D, ob2_D;
+	wire [7:0]  ob0_Q, ob1_Q, ob2_Q;
+	reg  ob0_CEN, ob1_CEN, ob2_CEN;
+	reg  ob0_WEN, ob1_WEN, ob2_WEN;
+
 
 	// SRAM instances
 	sram_4096x8 W_0 (.A(w0_A), .D(w0_D), .Q(w0_Q),
@@ -103,11 +111,17 @@ module SpMDV
 	sram_4096x8 X_D (.A(xd_A), .D(xd_D), .Q(xd_Q),  
 					.CLK(clk), .CEN(xd_CEN), .WEN(xd_WEN));
 
+	sram_4096x8 OUT_0 (.A(ob0_A), .D(ob0_D), .Q(ob0_Q),
+					.CLK(clk), .CEN(ob0_CEN), .WEN(ob0_WEN));
+	sram_4096x8 OUT_1 (.A(ob1_A), .D(ob1_D), .Q(ob1_Q),
+					.CLK(clk), .CEN(ob1_CEN), .WEN(ob1_WEN));
+	sram_4096x8 OUT_2 (.A(ob2_A), .D(ob2_D), .Q(ob2_Q),
+					.CLK(clk), .CEN(ob2_CEN), .WEN(ob2_WEN));
 
-	// Row-level W/P buffer and output reorder buffer
+
+	// Row-level W/P buffer
 	reg signed [7:0]  w_buf [0:47];
 	reg        [5:0]  p_buf [0:47];
-	reg signed [21:0] out_buf [0:4095];
 
 	// Computing
 	reg signed [21:0] sum;
@@ -122,6 +136,9 @@ module SpMDV
 	wire [13:0] wp_base_index;
 	wire [13:0] wp_issue_index;
 	wire [1:0]  wp_issue_sram;
+	wire [11:0] out_count_plus1;
+
+	assign out_count_plus1 = out_count + 12'd1;
 
 	assign wp_base_index = ({5'd0, row_count} << 5) +
 	                       ({5'd0, row_count} << 4);
@@ -264,6 +281,10 @@ module SpMDV
 		xc_CEN = 1'b1; xc_WEN = 1'b1; xc_A = 12'd0; xc_D = 8'd0;
 		xd_CEN = 1'b1; xd_WEN = 1'b1; xd_A = 12'd0; xd_D = 8'd0;
 
+		ob0_CEN = 1'b1; ob0_WEN = 1'b1; ob0_A = 12'd0; ob0_D = 8'd0;
+		ob1_CEN = 1'b1; ob1_WEN = 1'b1; ob1_A = 12'd0; ob1_D = 8'd0;
+		ob2_CEN = 1'b1; ob2_WEN = 1'b1; ob2_A = 12'd0; ob2_D = 8'd0;
+
 		case (state)
 
 			LOAD_WEIGHT: begin
@@ -400,6 +421,53 @@ module SpMDV
 					xd_CEN = 1'b0;
 					xd_WEN = 1'b1;
 					xd_A = {token_count, pipe_vector_index3};
+				end
+			end
+
+			STORE_RESULT: begin
+				ob0_CEN = 1'b0;
+				ob0_WEN = 1'b0;
+				ob0_A = {token_count, row_count[7:0]};
+				ob0_D = sum[7:0];
+
+				ob1_CEN = 1'b0;
+				ob1_WEN = 1'b0;
+				ob1_A = {token_count, row_count[7:0]};
+				ob1_D = sum[15:8];
+
+				ob2_CEN = 1'b0;
+				ob2_WEN = 1'b0;
+				ob2_A = {token_count, row_count[7:0]};
+				ob2_D = {2'b00, sum[21:16]};
+			end
+
+			OUTPUT_BUF: begin
+				ob0_CEN = 1'b0;
+				ob0_WEN = 1'b1;
+				ob0_A = out_count;
+
+				ob1_CEN = 1'b0;
+				ob1_WEN = 1'b1;
+				ob1_A = out_count;
+
+				ob2_CEN = 1'b0;
+				ob2_WEN = 1'b1;
+				ob2_A = out_count;
+			end
+
+			WAIT_OUTPUT: begin
+				if (out_count < 12'd4095) begin
+					ob0_CEN = 1'b0;
+					ob0_WEN = 1'b1;
+					ob0_A = out_count_plus1;
+
+					ob1_CEN = 1'b0;
+					ob1_WEN = 1'b1;
+					ob1_A = out_count_plus1;
+
+					ob2_CEN = 1'b0;
+					ob2_WEN = 1'b1;
+					ob2_A = out_count_plus1;
 				end
 			end
 
@@ -561,8 +629,6 @@ module SpMDV
 				end
 
 				STORE_RESULT: begin
-					out_buf[{token_count, row_count[7:0]}] <= sum;
-
 					if (token_count == 4'd15) begin
 						token_count <= 4'd0;
 
@@ -577,7 +643,10 @@ module SpMDV
 				end
 
 				OUTPUT_BUF: begin
-					o_result <= out_buf[out_count];
+				end
+
+				WAIT_OUTPUT: begin
+					o_result <= {ob2_Q[5:0], ob1_Q, ob0_Q};
 					o_valid  <= 1'b1;
 
 					if (out_count == 12'd4095)
@@ -683,6 +752,10 @@ module SpMDV
 			end
 
 			OUTPUT_BUF: begin
+				nextstate = WAIT_OUTPUT;
+			end
+
+			WAIT_OUTPUT: begin
 				if (out_count == 12'd4095)
 					nextstate = IDLE1;
 				else
