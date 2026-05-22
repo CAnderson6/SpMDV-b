@@ -69,12 +69,12 @@ module SpMDV
 	reg  b_CEN;
 	reg  b_WEN;
 
-	// vector SRAM lane0~1 (*2 4096*8)
-	reg  [11:0] x_A, xb_A;
-	reg  [7:0]  x_D, xb_D;
-	wire [7:0]  x_Q, xb_Q;
-	reg  x_CEN, xb_CEN;
-	reg  x_WEN, xb_WEN;
+	// vector SRAM lane0~15 (*16 4096*8)
+	reg  [11:0] x_A, xb_A, xc_A, xd_A, xe_A, xf_A, xg_A, xh_A, xi_A, xj_A, xk_A, xl_A, xm_A, xn_A, xo_A, xp_A;
+	reg  [7:0]  x_D, xb_D, xc_D, xd_D, xe_D, xf_D, xg_D, xh_D, xi_D, xj_D, xk_D, xl_D, xm_D, xn_D, xo_D, xp_D;
+	wire [7:0]  x_Q, xb_Q, xc_Q, xd_Q, xe_Q, xf_Q, xg_Q, xh_Q, xi_Q, xj_Q, xk_Q, xl_Q, xm_Q, xn_Q, xo_Q, xp_Q;
+	reg  x_CEN, xb_CEN, xc_CEN, xd_CEN, xe_CEN, xf_CEN, xg_CEN, xh_CEN, xi_CEN, xj_CEN, xk_CEN, xl_CEN, xm_CEN, xn_CEN, xo_CEN, xp_CEN;
+	reg  x_WEN, xb_WEN, xc_WEN, xd_WEN, xe_WEN, xf_WEN, xg_WEN, xh_WEN, xi_WEN, xj_WEN, xk_WEN, xl_WEN, xm_WEN, xn_WEN, xo_WEN, xp_WEN;
 
 	// output reorder buffer SRAM (*3 4096*8, store 22-bit result as 24-bit)
 	reg  [11:0] ob0_A, ob1_A, ob2_A;
@@ -102,10 +102,38 @@ module SpMDV
 	sram_256x8  B_  (.A(b_A),  .D(b_D),  .Q(b_Q),  
 					.CLK(clk), .CEN(b_CEN),  .WEN(b_WEN));
 
-	sram_4096x8 X_  (.A(x_A),  .D(x_D),  .Q(x_Q),  
-					.CLK(clk), .CEN(x_CEN),  .WEN(x_WEN));
-	sram_4096x8 X_B (.A(xb_A), .D(xb_D), .Q(xb_Q),  
+	sram_4096x8 X_   (.A(x_A), .D(x_D), .Q(x_Q),  
+					.CLK(clk), .CEN(x_CEN), .WEN(x_WEN));
+	sram_4096x8 X_B  (.A(xb_A), .D(xb_D), .Q(xb_Q),  
 					.CLK(clk), .CEN(xb_CEN), .WEN(xb_WEN));
+	sram_4096x8 X_C  (.A(xc_A), .D(xc_D), .Q(xc_Q),  
+					.CLK(clk), .CEN(xc_CEN), .WEN(xc_WEN));
+	sram_4096x8 X_D  (.A(xd_A), .D(xd_D), .Q(xd_Q),  
+					.CLK(clk), .CEN(xd_CEN), .WEN(xd_WEN));
+	sram_4096x8 X_E  (.A(xe_A), .D(xe_D), .Q(xe_Q),  
+					.CLK(clk), .CEN(xe_CEN), .WEN(xe_WEN));
+	sram_4096x8 X_F  (.A(xf_A), .D(xf_D), .Q(xf_Q),  
+					.CLK(clk), .CEN(xf_CEN), .WEN(xf_WEN));
+	sram_4096x8 X_G  (.A(xg_A), .D(xg_D), .Q(xg_Q),  
+					.CLK(clk), .CEN(xg_CEN), .WEN(xg_WEN));
+	sram_4096x8 X_H  (.A(xh_A), .D(xh_D), .Q(xh_Q),  
+					.CLK(clk), .CEN(xh_CEN), .WEN(xh_WEN));
+	sram_4096x8 X_I  (.A(xi_A), .D(xi_D), .Q(xi_Q),  
+					.CLK(clk), .CEN(xi_CEN), .WEN(xi_WEN));
+	sram_4096x8 X_J  (.A(xj_A), .D(xj_D), .Q(xj_Q),  
+					.CLK(clk), .CEN(xj_CEN), .WEN(xj_WEN));
+	sram_4096x8 X_K  (.A(xk_A), .D(xk_D), .Q(xk_Q),  
+					.CLK(clk), .CEN(xk_CEN), .WEN(xk_WEN));
+	sram_4096x8 X_L  (.A(xl_A), .D(xl_D), .Q(xl_Q),  
+					.CLK(clk), .CEN(xl_CEN), .WEN(xl_WEN));
+	sram_4096x8 X_M  (.A(xm_A), .D(xm_D), .Q(xm_Q),  
+					.CLK(clk), .CEN(xm_CEN), .WEN(xm_WEN));
+	sram_4096x8 X_N  (.A(xn_A), .D(xn_D), .Q(xn_Q),  
+					.CLK(clk), .CEN(xn_CEN), .WEN(xn_WEN));
+	sram_4096x8 X_O  (.A(xo_A), .D(xo_D), .Q(xo_Q),  
+					.CLK(clk), .CEN(xo_CEN), .WEN(xo_WEN));
+	sram_4096x8 X_P  (.A(xp_A), .D(xp_D), .Q(xp_Q),  
+					.CLK(clk), .CEN(xp_CEN), .WEN(xp_WEN));
 
 	sram_4096x8 OUT_0 (.A(ob0_A), .D(ob0_D), .Q(ob0_Q),
 					.CLK(clk), .CEN(ob0_CEN), .WEN(ob0_WEN));
@@ -166,57 +194,467 @@ module SpMDV
 	end
 
 
-	// 2-MAC compute pipeline from W/P buffer
-	reg [5:0] pipe_issue;   // 0~48, step by 2
-	reg [5:0] pipe_done;    // 0~48, step by 2
+	// 16-MAC compute pipeline from W/P buffer
+	reg [5:0] pipe_issue;   // 0~48, step by 16
+	reg [5:0] pipe_done;    // 0~48, step by 16
 	reg pipe_x_valid;
 
 	wire [5:0] pipe_issue_plus1;
+	wire [5:0] pipe_issue_plus2;
+	wire [5:0] pipe_issue_plus3;
+	wire [5:0] pipe_issue_plus4;
+	wire [5:0] pipe_issue_plus5;
+	wire [5:0] pipe_issue_plus6;
+	wire [5:0] pipe_issue_plus7;
+	wire [5:0] pipe_issue_plus8;
+	wire [5:0] pipe_issue_plus9;
+	wire [5:0] pipe_issue_plus10;
+	wire [5:0] pipe_issue_plus11;
+	wire [5:0] pipe_issue_plus12;
+	wire [5:0] pipe_issue_plus13;
+	wire [5:0] pipe_issue_plus14;
+	wire [5:0] pipe_issue_plus15;
+
+	wire [5:0] pipe_idx0;
+	wire [5:0] pipe_idx1;
+	wire [5:0] pipe_idx2;
+	wire [5:0] pipe_idx3;
+	wire [5:0] pipe_idx4;
+	wire [5:0] pipe_idx5;
+	wire [5:0] pipe_idx6;
+	wire [5:0] pipe_idx7;
+	wire [5:0] pipe_idx8;
+	wire [5:0] pipe_idx9;
+	wire [5:0] pipe_idx10;
+	wire [5:0] pipe_idx11;
+	wire [5:0] pipe_idx12;
+	wire [5:0] pipe_idx13;
+	wire [5:0] pipe_idx14;
+	wire [5:0] pipe_idx15;
 
 	assign pipe_issue_plus1 = pipe_issue + 6'd1;
+	assign pipe_issue_plus2 = pipe_issue + 6'd2;
+	assign pipe_issue_plus3 = pipe_issue + 6'd3;
+	assign pipe_issue_plus4 = pipe_issue + 6'd4;
+	assign pipe_issue_plus5 = pipe_issue + 6'd5;
+	assign pipe_issue_plus6 = pipe_issue + 6'd6;
+	assign pipe_issue_plus7 = pipe_issue + 6'd7;
+	assign pipe_issue_plus8 = pipe_issue + 6'd8;
+	assign pipe_issue_plus9 = pipe_issue + 6'd9;
+	assign pipe_issue_plus10 = pipe_issue + 6'd10;
+	assign pipe_issue_plus11 = pipe_issue + 6'd11;
+	assign pipe_issue_plus12 = pipe_issue + 6'd12;
+	assign pipe_issue_plus13 = pipe_issue + 6'd13;
+	assign pipe_issue_plus14 = pipe_issue + 6'd14;
+	assign pipe_issue_plus15 = pipe_issue + 6'd15;
+
+	assign pipe_idx0 = pipe_issue;
+	assign pipe_idx1 = pipe_issue_plus1;
+	assign pipe_idx2 = pipe_issue_plus2;
+	assign pipe_idx3 = pipe_issue_plus3;
+	assign pipe_idx4 = pipe_issue_plus4;
+	assign pipe_idx5 = pipe_issue_plus5;
+	assign pipe_idx6 = pipe_issue_plus6;
+	assign pipe_idx7 = pipe_issue_plus7;
+	assign pipe_idx8 = pipe_issue_plus8;
+	assign pipe_idx9 = pipe_issue_plus9;
+	assign pipe_idx10 = pipe_issue_plus10;
+	assign pipe_idx11 = pipe_issue_plus11;
+	assign pipe_idx12 = pipe_issue_plus12;
+	assign pipe_idx13 = pipe_issue_plus13;
+	assign pipe_idx14 = pipe_issue_plus14;
+	assign pipe_idx15 = pipe_issue_plus15;
 
 	reg signed [7:0] pipe_weight0_r;
 	reg signed [7:0] pipe_weight1_r;
+	reg signed [7:0] pipe_weight2_r;
+	reg signed [7:0] pipe_weight3_r;
+	reg signed [7:0] pipe_weight4_r;
+	reg signed [7:0] pipe_weight5_r;
+	reg signed [7:0] pipe_weight6_r;
+	reg signed [7:0] pipe_weight7_r;
+	reg signed [7:0] pipe_weight8_r;
+	reg signed [7:0] pipe_weight9_r;
+	reg signed [7:0] pipe_weight10_r;
+	reg signed [7:0] pipe_weight11_r;
+	reg signed [7:0] pipe_weight12_r;
+	reg signed [7:0] pipe_weight13_r;
+	reg signed [7:0] pipe_weight14_r;
+	reg signed [7:0] pipe_weight15_r;
 
 	reg [7:0] pipe_vector_index0;
 	reg [7:0] pipe_vector_index1;
+	reg [7:0] pipe_vector_index2;
+	reg [7:0] pipe_vector_index3;
+	reg [7:0] pipe_vector_index4;
+	reg [7:0] pipe_vector_index5;
+	reg [7:0] pipe_vector_index6;
+	reg [7:0] pipe_vector_index7;
+	reg [7:0] pipe_vector_index8;
+	reg [7:0] pipe_vector_index9;
+	reg [7:0] pipe_vector_index10;
+	reg [7:0] pipe_vector_index11;
+	reg [7:0] pipe_vector_index12;
+	reg [7:0] pipe_vector_index13;
+	reg [7:0] pipe_vector_index14;
+	reg [7:0] pipe_vector_index15;
 
-	// vector index from buffer index: 0->bank0, 1->bank1, 2->bank2, 3->bank3
+
+	// lane0 vector index
 	always @(*) begin
-		case (pipe_issue[1:0])
-			2'd0: pipe_vector_index0 = 8'd0   + {2'd0, p_buf[pipe_issue]};
-			2'd1: pipe_vector_index0 = 8'd64  + {2'd0, p_buf[pipe_issue]};
-			2'd2: pipe_vector_index0 = 8'd128 + {2'd0, p_buf[pipe_issue]};
-			2'd3: pipe_vector_index0 = 8'd192 + {2'd0, p_buf[pipe_issue]};
-			default: pipe_vector_index0 = 8'd0;
-		endcase
+		if (pipe_idx0 < 6'd48) begin
+			case (pipe_idx0[1:0])
+				2'd0: pipe_vector_index0 = 8'd0   + {2'd0, p_buf[pipe_idx0]};
+				2'd1: pipe_vector_index0 = 8'd64  + {2'd0, p_buf[pipe_idx0]};
+				2'd2: pipe_vector_index0 = 8'd128 + {2'd0, p_buf[pipe_idx0]};
+				2'd3: pipe_vector_index0 = 8'd192 + {2'd0, p_buf[pipe_idx0]};
+				default: pipe_vector_index0 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index0 = 8'd0;
+		end
 	end
 
+	// lane1 vector index
 	always @(*) begin
-		case (pipe_issue_plus1[1:0])
-			2'd0: pipe_vector_index1 = 8'd0   + {2'd0, p_buf[pipe_issue_plus1]};
-			2'd1: pipe_vector_index1 = 8'd64  + {2'd0, p_buf[pipe_issue_plus1]};
-			2'd2: pipe_vector_index1 = 8'd128 + {2'd0, p_buf[pipe_issue_plus1]};
-			2'd3: pipe_vector_index1 = 8'd192 + {2'd0, p_buf[pipe_issue_plus1]};
-			default: pipe_vector_index1 = 8'd0;
-		endcase
+		if (pipe_idx1 < 6'd48) begin
+			case (pipe_idx1[1:0])
+				2'd0: pipe_vector_index1 = 8'd0   + {2'd0, p_buf[pipe_idx1]};
+				2'd1: pipe_vector_index1 = 8'd64  + {2'd0, p_buf[pipe_idx1]};
+				2'd2: pipe_vector_index1 = 8'd128 + {2'd0, p_buf[pipe_idx1]};
+				2'd3: pipe_vector_index1 = 8'd192 + {2'd0, p_buf[pipe_idx1]};
+				default: pipe_vector_index1 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index1 = 8'd0;
+		end
+	end
+
+	// lane2 vector index
+	always @(*) begin
+		if (pipe_idx2 < 6'd48) begin
+			case (pipe_idx2[1:0])
+				2'd0: pipe_vector_index2 = 8'd0   + {2'd0, p_buf[pipe_idx2]};
+				2'd1: pipe_vector_index2 = 8'd64  + {2'd0, p_buf[pipe_idx2]};
+				2'd2: pipe_vector_index2 = 8'd128 + {2'd0, p_buf[pipe_idx2]};
+				2'd3: pipe_vector_index2 = 8'd192 + {2'd0, p_buf[pipe_idx2]};
+				default: pipe_vector_index2 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index2 = 8'd0;
+		end
+	end
+
+	// lane3 vector index
+	always @(*) begin
+		if (pipe_idx3 < 6'd48) begin
+			case (pipe_idx3[1:0])
+				2'd0: pipe_vector_index3 = 8'd0   + {2'd0, p_buf[pipe_idx3]};
+				2'd1: pipe_vector_index3 = 8'd64  + {2'd0, p_buf[pipe_idx3]};
+				2'd2: pipe_vector_index3 = 8'd128 + {2'd0, p_buf[pipe_idx3]};
+				2'd3: pipe_vector_index3 = 8'd192 + {2'd0, p_buf[pipe_idx3]};
+				default: pipe_vector_index3 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index3 = 8'd0;
+		end
+	end
+
+	// lane4 vector index
+	always @(*) begin
+		if (pipe_idx4 < 6'd48) begin
+			case (pipe_idx4[1:0])
+				2'd0: pipe_vector_index4 = 8'd0   + {2'd0, p_buf[pipe_idx4]};
+				2'd1: pipe_vector_index4 = 8'd64  + {2'd0, p_buf[pipe_idx4]};
+				2'd2: pipe_vector_index4 = 8'd128 + {2'd0, p_buf[pipe_idx4]};
+				2'd3: pipe_vector_index4 = 8'd192 + {2'd0, p_buf[pipe_idx4]};
+				default: pipe_vector_index4 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index4 = 8'd0;
+		end
+	end
+
+	// lane5 vector index
+	always @(*) begin
+		if (pipe_idx5 < 6'd48) begin
+			case (pipe_idx5[1:0])
+				2'd0: pipe_vector_index5 = 8'd0   + {2'd0, p_buf[pipe_idx5]};
+				2'd1: pipe_vector_index5 = 8'd64  + {2'd0, p_buf[pipe_idx5]};
+				2'd2: pipe_vector_index5 = 8'd128 + {2'd0, p_buf[pipe_idx5]};
+				2'd3: pipe_vector_index5 = 8'd192 + {2'd0, p_buf[pipe_idx5]};
+				default: pipe_vector_index5 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index5 = 8'd0;
+		end
+	end
+
+	// lane6 vector index
+	always @(*) begin
+		if (pipe_idx6 < 6'd48) begin
+			case (pipe_idx6[1:0])
+				2'd0: pipe_vector_index6 = 8'd0   + {2'd0, p_buf[pipe_idx6]};
+				2'd1: pipe_vector_index6 = 8'd64  + {2'd0, p_buf[pipe_idx6]};
+				2'd2: pipe_vector_index6 = 8'd128 + {2'd0, p_buf[pipe_idx6]};
+				2'd3: pipe_vector_index6 = 8'd192 + {2'd0, p_buf[pipe_idx6]};
+				default: pipe_vector_index6 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index6 = 8'd0;
+		end
+	end
+
+	// lane7 vector index
+	always @(*) begin
+		if (pipe_idx7 < 6'd48) begin
+			case (pipe_idx7[1:0])
+				2'd0: pipe_vector_index7 = 8'd0   + {2'd0, p_buf[pipe_idx7]};
+				2'd1: pipe_vector_index7 = 8'd64  + {2'd0, p_buf[pipe_idx7]};
+				2'd2: pipe_vector_index7 = 8'd128 + {2'd0, p_buf[pipe_idx7]};
+				2'd3: pipe_vector_index7 = 8'd192 + {2'd0, p_buf[pipe_idx7]};
+				default: pipe_vector_index7 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index7 = 8'd0;
+		end
+	end
+
+	// lane8 vector index
+	always @(*) begin
+		if (pipe_idx8 < 6'd48) begin
+			case (pipe_idx8[1:0])
+				2'd0: pipe_vector_index8 = 8'd0   + {2'd0, p_buf[pipe_idx8]};
+				2'd1: pipe_vector_index8 = 8'd64  + {2'd0, p_buf[pipe_idx8]};
+				2'd2: pipe_vector_index8 = 8'd128 + {2'd0, p_buf[pipe_idx8]};
+				2'd3: pipe_vector_index8 = 8'd192 + {2'd0, p_buf[pipe_idx8]};
+				default: pipe_vector_index8 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index8 = 8'd0;
+		end
+	end
+
+	// lane9 vector index
+	always @(*) begin
+		if (pipe_idx9 < 6'd48) begin
+			case (pipe_idx9[1:0])
+				2'd0: pipe_vector_index9 = 8'd0   + {2'd0, p_buf[pipe_idx9]};
+				2'd1: pipe_vector_index9 = 8'd64  + {2'd0, p_buf[pipe_idx9]};
+				2'd2: pipe_vector_index9 = 8'd128 + {2'd0, p_buf[pipe_idx9]};
+				2'd3: pipe_vector_index9 = 8'd192 + {2'd0, p_buf[pipe_idx9]};
+				default: pipe_vector_index9 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index9 = 8'd0;
+		end
+	end
+
+	// lane10 vector index
+	always @(*) begin
+		if (pipe_idx10 < 6'd48) begin
+			case (pipe_idx10[1:0])
+				2'd0: pipe_vector_index10 = 8'd0   + {2'd0, p_buf[pipe_idx10]};
+				2'd1: pipe_vector_index10 = 8'd64  + {2'd0, p_buf[pipe_idx10]};
+				2'd2: pipe_vector_index10 = 8'd128 + {2'd0, p_buf[pipe_idx10]};
+				2'd3: pipe_vector_index10 = 8'd192 + {2'd0, p_buf[pipe_idx10]};
+				default: pipe_vector_index10 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index10 = 8'd0;
+		end
+	end
+
+	// lane11 vector index
+	always @(*) begin
+		if (pipe_idx11 < 6'd48) begin
+			case (pipe_idx11[1:0])
+				2'd0: pipe_vector_index11 = 8'd0   + {2'd0, p_buf[pipe_idx11]};
+				2'd1: pipe_vector_index11 = 8'd64  + {2'd0, p_buf[pipe_idx11]};
+				2'd2: pipe_vector_index11 = 8'd128 + {2'd0, p_buf[pipe_idx11]};
+				2'd3: pipe_vector_index11 = 8'd192 + {2'd0, p_buf[pipe_idx11]};
+				default: pipe_vector_index11 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index11 = 8'd0;
+		end
+	end
+
+	// lane12 vector index
+	always @(*) begin
+		if (pipe_idx12 < 6'd48) begin
+			case (pipe_idx12[1:0])
+				2'd0: pipe_vector_index12 = 8'd0   + {2'd0, p_buf[pipe_idx12]};
+				2'd1: pipe_vector_index12 = 8'd64  + {2'd0, p_buf[pipe_idx12]};
+				2'd2: pipe_vector_index12 = 8'd128 + {2'd0, p_buf[pipe_idx12]};
+				2'd3: pipe_vector_index12 = 8'd192 + {2'd0, p_buf[pipe_idx12]};
+				default: pipe_vector_index12 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index12 = 8'd0;
+		end
+	end
+
+	// lane13 vector index
+	always @(*) begin
+		if (pipe_idx13 < 6'd48) begin
+			case (pipe_idx13[1:0])
+				2'd0: pipe_vector_index13 = 8'd0   + {2'd0, p_buf[pipe_idx13]};
+				2'd1: pipe_vector_index13 = 8'd64  + {2'd0, p_buf[pipe_idx13]};
+				2'd2: pipe_vector_index13 = 8'd128 + {2'd0, p_buf[pipe_idx13]};
+				2'd3: pipe_vector_index13 = 8'd192 + {2'd0, p_buf[pipe_idx13]};
+				default: pipe_vector_index13 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index13 = 8'd0;
+		end
+	end
+
+	// lane14 vector index
+	always @(*) begin
+		if (pipe_idx14 < 6'd48) begin
+			case (pipe_idx14[1:0])
+				2'd0: pipe_vector_index14 = 8'd0   + {2'd0, p_buf[pipe_idx14]};
+				2'd1: pipe_vector_index14 = 8'd64  + {2'd0, p_buf[pipe_idx14]};
+				2'd2: pipe_vector_index14 = 8'd128 + {2'd0, p_buf[pipe_idx14]};
+				2'd3: pipe_vector_index14 = 8'd192 + {2'd0, p_buf[pipe_idx14]};
+				default: pipe_vector_index14 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index14 = 8'd0;
+		end
+	end
+
+	// lane15 vector index
+	always @(*) begin
+		if (pipe_idx15 < 6'd48) begin
+			case (pipe_idx15[1:0])
+				2'd0: pipe_vector_index15 = 8'd0   + {2'd0, p_buf[pipe_idx15]};
+				2'd1: pipe_vector_index15 = 8'd64  + {2'd0, p_buf[pipe_idx15]};
+				2'd2: pipe_vector_index15 = 8'd128 + {2'd0, p_buf[pipe_idx15]};
+				2'd3: pipe_vector_index15 = 8'd192 + {2'd0, p_buf[pipe_idx15]};
+				default: pipe_vector_index15 = 8'd0;
+			endcase
+		end
+		else begin
+			pipe_vector_index15 = 8'd0;
+		end
 	end
 
 	wire signed [15:0] pipe_product0;
 	wire signed [15:0] pipe_product1;
+	wire signed [15:0] pipe_product2;
+	wire signed [15:0] pipe_product3;
+	wire signed [15:0] pipe_product4;
+	wire signed [15:0] pipe_product5;
+	wire signed [15:0] pipe_product6;
+	wire signed [15:0] pipe_product7;
+	wire signed [15:0] pipe_product8;
+	wire signed [15:0] pipe_product9;
+	wire signed [15:0] pipe_product10;
+	wire signed [15:0] pipe_product11;
+	wire signed [15:0] pipe_product12;
+	wire signed [15:0] pipe_product13;
+	wire signed [15:0] pipe_product14;
+	wire signed [15:0] pipe_product15;
 
 	wire signed [21:0] pipe_product0_ext;
 	wire signed [21:0] pipe_product1_ext;
+	wire signed [21:0] pipe_product2_ext;
+	wire signed [21:0] pipe_product3_ext;
+	wire signed [21:0] pipe_product4_ext;
+	wire signed [21:0] pipe_product5_ext;
+	wire signed [21:0] pipe_product6_ext;
+	wire signed [21:0] pipe_product7_ext;
+	wire signed [21:0] pipe_product8_ext;
+	wire signed [21:0] pipe_product9_ext;
+	wire signed [21:0] pipe_product10_ext;
+	wire signed [21:0] pipe_product11_ext;
+	wire signed [21:0] pipe_product12_ext;
+	wire signed [21:0] pipe_product13_ext;
+	wire signed [21:0] pipe_product14_ext;
+	wire signed [21:0] pipe_product15_ext;
 
-	wire signed [21:0] pipe_pair_sum;
+	wire signed [21:0] pipe_sum0_1;
+	wire signed [21:0] pipe_sum2_3;
+	wire signed [21:0] pipe_sum4_5;
+	wire signed [21:0] pipe_sum6_7;
+	wire signed [21:0] pipe_sum8_9;
+	wire signed [21:0] pipe_sum10_11;
+	wire signed [21:0] pipe_sum12_13;
+	wire signed [21:0] pipe_sum14_15;
+	wire signed [21:0] pipe_sum0_3;
+	wire signed [21:0] pipe_sum4_7;
+	wire signed [21:0] pipe_sum8_11;
+	wire signed [21:0] pipe_sum12_15;
+	wire signed [21:0] pipe_sum0_7;
+	wire signed [21:0] pipe_sum8_15;
+	wire signed [21:0] pipe_sixteen_sum;
 
 	assign pipe_product0 = $signed(pipe_weight0_r) * $signed(x_Q);
 	assign pipe_product1 = $signed(pipe_weight1_r) * $signed(xb_Q);
+	assign pipe_product2 = $signed(pipe_weight2_r) * $signed(xc_Q);
+	assign pipe_product3 = $signed(pipe_weight3_r) * $signed(xd_Q);
+	assign pipe_product4 = $signed(pipe_weight4_r) * $signed(xe_Q);
+	assign pipe_product5 = $signed(pipe_weight5_r) * $signed(xf_Q);
+	assign pipe_product6 = $signed(pipe_weight6_r) * $signed(xg_Q);
+	assign pipe_product7 = $signed(pipe_weight7_r) * $signed(xh_Q);
+	assign pipe_product8 = $signed(pipe_weight8_r) * $signed(xi_Q);
+	assign pipe_product9 = $signed(pipe_weight9_r) * $signed(xj_Q);
+	assign pipe_product10 = $signed(pipe_weight10_r) * $signed(xk_Q);
+	assign pipe_product11 = $signed(pipe_weight11_r) * $signed(xl_Q);
+	assign pipe_product12 = $signed(pipe_weight12_r) * $signed(xm_Q);
+	assign pipe_product13 = $signed(pipe_weight13_r) * $signed(xn_Q);
+	assign pipe_product14 = $signed(pipe_weight14_r) * $signed(xo_Q);
+	assign pipe_product15 = $signed(pipe_weight15_r) * $signed(xp_Q);
 
 	assign pipe_product0_ext = {{6{pipe_product0[15]}}, pipe_product0};
 	assign pipe_product1_ext = {{6{pipe_product1[15]}}, pipe_product1};
+	assign pipe_product2_ext = {{6{pipe_product2[15]}}, pipe_product2};
+	assign pipe_product3_ext = {{6{pipe_product3[15]}}, pipe_product3};
+	assign pipe_product4_ext = {{6{pipe_product4[15]}}, pipe_product4};
+	assign pipe_product5_ext = {{6{pipe_product5[15]}}, pipe_product5};
+	assign pipe_product6_ext = {{6{pipe_product6[15]}}, pipe_product6};
+	assign pipe_product7_ext = {{6{pipe_product7[15]}}, pipe_product7};
+	assign pipe_product8_ext = {{6{pipe_product8[15]}}, pipe_product8};
+	assign pipe_product9_ext = {{6{pipe_product9[15]}}, pipe_product9};
+	assign pipe_product10_ext = {{6{pipe_product10[15]}}, pipe_product10};
+	assign pipe_product11_ext = {{6{pipe_product11[15]}}, pipe_product11};
+	assign pipe_product12_ext = {{6{pipe_product12[15]}}, pipe_product12};
+	assign pipe_product13_ext = {{6{pipe_product13[15]}}, pipe_product13};
+	assign pipe_product14_ext = {{6{pipe_product14[15]}}, pipe_product14};
+	assign pipe_product15_ext = {{6{pipe_product15[15]}}, pipe_product15};
 
-	assign pipe_pair_sum = pipe_product0_ext + pipe_product1_ext;
+	assign pipe_sum0_1 = pipe_product0_ext + pipe_product1_ext;
+	assign pipe_sum2_3 = pipe_product2_ext + pipe_product3_ext;
+	assign pipe_sum4_5 = pipe_product4_ext + pipe_product5_ext;
+	assign pipe_sum6_7 = pipe_product6_ext + pipe_product7_ext;
+	assign pipe_sum8_9 = pipe_product8_ext + pipe_product9_ext;
+	assign pipe_sum10_11 = pipe_product10_ext + pipe_product11_ext;
+	assign pipe_sum12_13 = pipe_product12_ext + pipe_product13_ext;
+	assign pipe_sum14_15 = pipe_product14_ext + pipe_product15_ext;
+	assign pipe_sum0_3 = pipe_sum0_1 + pipe_sum2_3;
+	assign pipe_sum4_7 = pipe_sum4_5 + pipe_sum6_7;
+	assign pipe_sum8_11 = pipe_sum8_9 + pipe_sum10_11;
+	assign pipe_sum12_15 = pipe_sum12_13 + pipe_sum14_15;
+	assign pipe_sum0_7 = pipe_sum0_3 + pipe_sum4_7;
+	assign pipe_sum8_15 = pipe_sum8_11 + pipe_sum12_15;
+	assign pipe_sixteen_sum = pipe_sum0_7 + pipe_sum8_15;
 
 
 	// SRAM connecting
@@ -232,8 +670,22 @@ module SpMDV
 
 		b_CEN  = 1'b1; b_WEN  = 1'b1; b_A  = 8'd0;  b_D  = 8'd0;
 
-		x_CEN  = 1'b1; x_WEN  = 1'b1; x_A  = 12'd0; x_D  = 8'd0;
+		x_CEN = 1'b1; x_WEN = 1'b1; x_A = 12'd0; x_D = 8'd0;
 		xb_CEN = 1'b1; xb_WEN = 1'b1; xb_A = 12'd0; xb_D = 8'd0;
+		xc_CEN = 1'b1; xc_WEN = 1'b1; xc_A = 12'd0; xc_D = 8'd0;
+		xd_CEN = 1'b1; xd_WEN = 1'b1; xd_A = 12'd0; xd_D = 8'd0;
+		xe_CEN = 1'b1; xe_WEN = 1'b1; xe_A = 12'd0; xe_D = 8'd0;
+		xf_CEN = 1'b1; xf_WEN = 1'b1; xf_A = 12'd0; xf_D = 8'd0;
+		xg_CEN = 1'b1; xg_WEN = 1'b1; xg_A = 12'd0; xg_D = 8'd0;
+		xh_CEN = 1'b1; xh_WEN = 1'b1; xh_A = 12'd0; xh_D = 8'd0;
+		xi_CEN = 1'b1; xi_WEN = 1'b1; xi_A = 12'd0; xi_D = 8'd0;
+		xj_CEN = 1'b1; xj_WEN = 1'b1; xj_A = 12'd0; xj_D = 8'd0;
+		xk_CEN = 1'b1; xk_WEN = 1'b1; xk_A = 12'd0; xk_D = 8'd0;
+		xl_CEN = 1'b1; xl_WEN = 1'b1; xl_A = 12'd0; xl_D = 8'd0;
+		xm_CEN = 1'b1; xm_WEN = 1'b1; xm_A = 12'd0; xm_D = 8'd0;
+		xn_CEN = 1'b1; xn_WEN = 1'b1; xn_A = 12'd0; xn_D = 8'd0;
+		xo_CEN = 1'b1; xo_WEN = 1'b1; xo_A = 12'd0; xo_D = 8'd0;
+		xp_CEN = 1'b1; xp_WEN = 1'b1; xp_A = 12'd0; xp_D = 8'd0;
 
 		ob0_CEN = 1'b1; ob0_WEN = 1'b1; ob0_A = 12'd0; ob0_D = 8'd0;
 		ob1_CEN = 1'b1; ob1_WEN = 1'b1; ob1_A = 12'd0; ob1_D = 8'd0;
@@ -298,15 +750,22 @@ module SpMDV
 
 			LOAD_VECTOR: begin
 				if (raw_data_valid) begin
-					x_CEN = 1'b0;
-					x_WEN = 1'b0;
-					x_A = load_count[11:0];
-					x_D = raw_input;
-
-					xb_CEN = 1'b0;
-					xb_WEN = 1'b0;
-					xb_A = load_count[11:0];
-					xb_D = raw_input;
+					x_CEN = 1'b0; x_WEN = 1'b0; x_A = load_count[11:0]; x_D = raw_input;
+					xb_CEN = 1'b0; xb_WEN = 1'b0; xb_A = load_count[11:0]; xb_D = raw_input;
+					xc_CEN = 1'b0; xc_WEN = 1'b0; xc_A = load_count[11:0]; xc_D = raw_input;
+					xd_CEN = 1'b0; xd_WEN = 1'b0; xd_A = load_count[11:0]; xd_D = raw_input;
+					xe_CEN = 1'b0; xe_WEN = 1'b0; xe_A = load_count[11:0]; xe_D = raw_input;
+					xf_CEN = 1'b0; xf_WEN = 1'b0; xf_A = load_count[11:0]; xf_D = raw_input;
+					xg_CEN = 1'b0; xg_WEN = 1'b0; xg_A = load_count[11:0]; xg_D = raw_input;
+					xh_CEN = 1'b0; xh_WEN = 1'b0; xh_A = load_count[11:0]; xh_D = raw_input;
+					xi_CEN = 1'b0; xi_WEN = 1'b0; xi_A = load_count[11:0]; xi_D = raw_input;
+					xj_CEN = 1'b0; xj_WEN = 1'b0; xj_A = load_count[11:0]; xj_D = raw_input;
+					xk_CEN = 1'b0; xk_WEN = 1'b0; xk_A = load_count[11:0]; xk_D = raw_input;
+					xl_CEN = 1'b0; xl_WEN = 1'b0; xl_A = load_count[11:0]; xl_D = raw_input;
+					xm_CEN = 1'b0; xm_WEN = 1'b0; xm_A = load_count[11:0]; xm_D = raw_input;
+					xn_CEN = 1'b0; xn_WEN = 1'b0; xn_A = load_count[11:0]; xn_D = raw_input;
+					xo_CEN = 1'b0; xo_WEN = 1'b0; xo_A = load_count[11:0]; xo_D = raw_input;
+					xp_CEN = 1'b0; xp_WEN = 1'b0; xp_A = load_count[11:0]; xp_D = raw_input;
 				end
 			end
 
@@ -350,13 +809,22 @@ module SpMDV
 
 			COMPUTE_PIPE: begin
 				if (pipe_issue < 6'd48) begin
-					x_CEN = 1'b0;
-					x_WEN = 1'b1;
-					x_A = {token_count, pipe_vector_index0};
-
-					xb_CEN = 1'b0;
-					xb_WEN = 1'b1;
-					xb_A = {token_count, pipe_vector_index1};
+					x_CEN = 1'b0; x_WEN = 1'b1; x_A = {token_count, pipe_vector_index0};
+					xb_CEN = 1'b0; xb_WEN = 1'b1; xb_A = {token_count, pipe_vector_index1};
+					xc_CEN = 1'b0; xc_WEN = 1'b1; xc_A = {token_count, pipe_vector_index2};
+					xd_CEN = 1'b0; xd_WEN = 1'b1; xd_A = {token_count, pipe_vector_index3};
+					xe_CEN = 1'b0; xe_WEN = 1'b1; xe_A = {token_count, pipe_vector_index4};
+					xf_CEN = 1'b0; xf_WEN = 1'b1; xf_A = {token_count, pipe_vector_index5};
+					xg_CEN = 1'b0; xg_WEN = 1'b1; xg_A = {token_count, pipe_vector_index6};
+					xh_CEN = 1'b0; xh_WEN = 1'b1; xh_A = {token_count, pipe_vector_index7};
+					xi_CEN = 1'b0; xi_WEN = 1'b1; xi_A = {token_count, pipe_vector_index8};
+					xj_CEN = 1'b0; xj_WEN = 1'b1; xj_A = {token_count, pipe_vector_index9};
+					xk_CEN = 1'b0; xk_WEN = 1'b1; xk_A = {token_count, pipe_vector_index10};
+					xl_CEN = 1'b0; xl_WEN = 1'b1; xl_A = {token_count, pipe_vector_index11};
+					xm_CEN = 1'b0; xm_WEN = 1'b1; xm_A = {token_count, pipe_vector_index12};
+					xn_CEN = 1'b0; xn_WEN = 1'b1; xn_A = {token_count, pipe_vector_index13};
+					xo_CEN = 1'b0; xo_WEN = 1'b1; xo_A = {token_count, pipe_vector_index14};
+					xp_CEN = 1'b0; xp_WEN = 1'b1; xp_A = {token_count, pipe_vector_index15};
 				end
 			end
 
@@ -437,6 +905,20 @@ module SpMDV
 
 			pipe_weight0_r <= 8'd0;
 			pipe_weight1_r <= 8'd0;
+			pipe_weight2_r <= 8'd0;
+			pipe_weight3_r <= 8'd0;
+			pipe_weight4_r <= 8'd0;
+			pipe_weight5_r <= 8'd0;
+			pipe_weight6_r <= 8'd0;
+			pipe_weight7_r <= 8'd0;
+			pipe_weight8_r <= 8'd0;
+			pipe_weight9_r <= 8'd0;
+			pipe_weight10_r <= 8'd0;
+			pipe_weight11_r <= 8'd0;
+			pipe_weight12_r <= 8'd0;
+			pipe_weight13_r <= 8'd0;
+			pipe_weight14_r <= 8'd0;
+			pipe_weight15_r <= 8'd0;
 		end
 
 		else begin
@@ -532,25 +1014,53 @@ module SpMDV
 					pipe_issue <= 6'd0;
 					pipe_done <= 6'd0;
 					pipe_x_valid <= 1'b0;
-					pipe_weight0_r <= 8'd0;
-					pipe_weight1_r <= 8'd0;
+			pipe_weight0_r <= 8'd0;
+			pipe_weight1_r <= 8'd0;
+			pipe_weight2_r <= 8'd0;
+			pipe_weight3_r <= 8'd0;
+			pipe_weight4_r <= 8'd0;
+			pipe_weight5_r <= 8'd0;
+			pipe_weight6_r <= 8'd0;
+			pipe_weight7_r <= 8'd0;
+			pipe_weight8_r <= 8'd0;
+			pipe_weight9_r <= 8'd0;
+			pipe_weight10_r <= 8'd0;
+			pipe_weight11_r <= 8'd0;
+			pipe_weight12_r <= 8'd0;
+			pipe_weight13_r <= 8'd0;
+			pipe_weight14_r <= 8'd0;
+			pipe_weight15_r <= 8'd0;
 				end
 
 				COMPUTE_PIPE: begin
-					// X_Q valid, do two MACs
+					// X_Q valid, do sixteen MACs
 					if (pipe_x_valid) begin
-						sum <= sum + pipe_pair_sum;
+						sum <= sum + pipe_sixteen_sum;
 
-						if (pipe_done <= 6'd46)
-							pipe_done <= pipe_done + 6'd2;
+						if (pipe_done <= 6'd32)
+							pipe_done <= pipe_done + 6'd16;
 					end
 
-					// Issue X reads from two duplicated vector SRAMs
+					// Issue X reads from sixteen duplicated vector SRAMs
 					if (pipe_issue < 6'd48) begin
-						pipe_weight0_r <= w_buf[pipe_issue];
-						pipe_weight1_r <= w_buf[pipe_issue_plus1];
+						pipe_weight0_r <= w_buf[pipe_idx0];
+						pipe_weight1_r <= w_buf[pipe_idx1];
+						pipe_weight2_r <= w_buf[pipe_idx2];
+						pipe_weight3_r <= w_buf[pipe_idx3];
+						pipe_weight4_r <= w_buf[pipe_idx4];
+						pipe_weight5_r <= w_buf[pipe_idx5];
+						pipe_weight6_r <= w_buf[pipe_idx6];
+						pipe_weight7_r <= w_buf[pipe_idx7];
+						pipe_weight8_r <= w_buf[pipe_idx8];
+						pipe_weight9_r <= w_buf[pipe_idx9];
+						pipe_weight10_r <= w_buf[pipe_idx10];
+						pipe_weight11_r <= w_buf[pipe_idx11];
+						pipe_weight12_r <= w_buf[pipe_idx12];
+						pipe_weight13_r <= w_buf[pipe_idx13];
+						pipe_weight14_r <= w_buf[pipe_idx14];
+						pipe_weight15_r <= w_buf[pipe_idx15];
 
-						pipe_issue <= pipe_issue + 6'd2;
+						pipe_issue <= pipe_issue + 6'd16;
 						pipe_x_valid <= 1'b1;
 					end
 					else begin
@@ -666,7 +1176,7 @@ module SpMDV
 			end
 
 			COMPUTE_PIPE: begin
-				if (pipe_x_valid && pipe_done == 6'd46)
+				if (pipe_x_valid && pipe_done == 6'd32)
 					nextstate = STORE_RESULT;
 				else
 					nextstate = COMPUTE_PIPE;
